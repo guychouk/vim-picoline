@@ -1,0 +1,108 @@
+*picoline.txt*  A tiny statusline for vim
+
+Author: guychouk
+License: Same terms as Vim itself (see |license|)
+
+CONTENTS                                                *picoline* *picoline-contents*
+
+1. Introduction                         |picoline-introduction|
+2. Configuration                        |picoline-configuration|
+3. Highlight Groups                     |picoline-highlight-groups|
+4. Commands                             |picoline-commands|
+5. Functions                            |picoline-functions|
+
+==============================================================================
+1. INTRODUCTION                                 *picoline-introduction*
+
+Picoline is a tiny status line written in vim9script. It provides a minimal
+statusline with mode highlighting, git branch display, and easy customization.
+
+Features:~
+- Highlights current mode using colors
+- Shows current git branch (requires vim-fugitive)
+- Supports gutentags integration
+- Exposes highlight groups for full customization
+
+==============================================================================
+2. CONFIGURATION                                *picoline-configuration*
+
+Picoline works out of the box with no configuration required. It automatically
+sets up the statusline and mode highlighting when loaded.
+
+The statusline is updated automatically when entering/leaving windows and
+buffers. Mode highlighting changes as you switch between vim modes.
+
+==============================================================================
+3. HIGHLIGHT GROUPS                             *picoline-highlight-groups*
+
+Picoline defines the following highlight groups for mode-specific coloring.
+These groups are automatically created with sensible defaults, but can be
+customized in your colorscheme or vimrc.
+
+*PicolineNRM*           Normal mode highlight group
+                        Default: uses standard StatusLine colors
+
+*PicolineINS*           Insert mode highlight group  
+                        Default: white text on red background
+
+*PicolineVIS*           Visual mode highlight group
+                        Default: dark text on yellow background
+
+*PicolineCMD*           Command mode highlight group
+                        Default: dark text on orange background
+
+*PicolineRPL*           Replace mode highlight group
+                        Default: white text on magenta background
+
+*PicolineSEL*           Select mode highlight group
+                        Default: white text on blue background
+
+*PicolineTRM*           Terminal mode highlight group
+                        Default: dark text on cyan background
+
+*PicolinePRO*           Prompt mode highlight group
+                        Default: dark text on green background
+
+*PicolineEXT*           External mode highlight group
+                        Default: uses muted colors
+
+Customization Example:~
+>
+        " Custom colors for insert and visual modes
+        highlight PicolineINS guifg=#ffffff guibg=#e74c3c 
+        \                     ctermbg=red ctermfg=white
+        highlight PicolineVIS guifg=#2c3e50 guibg=#f1c40f 
+        \                     ctermbg=yellow ctermfg=black
+<
+
+The highlight groups are set up automatically when:
+- Vim starts up
+- A new colorscheme is applied
+- USR1 signal is received
+
+If a colorscheme already defines these highlight groups, picoline will use
+those definitions instead of the defaults.
+
+==============================================================================
+4. COMMANDS                                     *picoline-commands*
+
+*:PicolineToggle*       Toggle the statusline on/off
+                        This command switches between showing and hiding
+                        the statusline by changing 'laststatus' between 0
+                        and 2.
+
+==============================================================================
+5. FUNCTIONS                                    *picoline-functions*
+
+*picoline#Build({active})*      Build the statusline string
+                        {active} is a boolean indicating whether this is
+                        for the active window (v:true) or inactive window
+                        (v:false).
+
+                        Returns a string suitable for use with 'statusline'.
+
+*picoline#Toggle()*             Toggle statusline visibility
+                        Implementation of the |:PicolineToggle| command.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
