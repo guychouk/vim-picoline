@@ -43,7 +43,7 @@ export def Build(active: bool): string
     separator,
     fnamemodify(getcwd(), ':t'),
     separator,
-    '%{expand("%")} %m %r %h',
+    '%{expand("%:.")} %m %r %h',
     '%=',
     gutentags,
     fugitive,
