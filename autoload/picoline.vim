@@ -1,44 +1,61 @@
 vim9script
 
-var statusline_mode_map = {
-  'i':      'INS',
-  '!':      'EXT',
-  't':      'TRM',
-  'n':      'NRM',
-  'no':     'NRM',
-  'R':      'RPL',
-  'Rv':     'RPL',
-  'c':      'CMD',
-  'cv':     'CMD',
-  'ce':     'CMD',
-  'r':      'PRO',
-  'rm':     'PRO',
-  'r?':     'PRO',
-  'v':      'VIS',
-  'V':      'VIS',
-  "\<C-V>": 'VIS',
-  's':      'SEL',
-  'S':      'SEL',
-  "<\C-S>": 'SEL',
-}
+def GetModeInfo(): string
+  var current_mode = mode()
+  var current_state = exists('*state') ? state() : ''
+  # Check mode patterns first
+  if current_mode =~# '[Ri]'
+    return 'INS'
+  elseif current_mode ==# '!'
+    return 'EXT'
+  elseif current_mode ==# 't'
+    return 'TRM'
+  elseif current_mode =~# '[Rv]'
+    return 'RPL'
+  elseif current_mode =~? '[v]'
+    return 'VIS'
+  elseif current_mode ==? 'c'
+    # Distinguish between command-line (:) and search (/?)
+    var cmdtype = getcmdtype()
+    if cmdtype =~ '[/?]'
+      return 'SCH'
+    else
+      return 'CMD'
+    endif
+  elseif current_mode =~# '[r]'
+    return 'PRO'
+  elseif current_mode =~? '[sS]'
+    return 'SEL'
+  # Check state for operator-pending (only after mode checks)
+  elseif current_state =~# '[mo]'
+    return 'PEN'
+  else
+    return 'NRM'
+  endif
+enddef
 
 export def Build(active: bool): string
-  var separator = "┊"
-  var icon = active ? '(ᵔ◡ᵔ)' : '(∪｡∪)'
+  if !active
+    return BuildSleeping()
+  endif
 
-  var fugitive = active && exists('*g:FugitiveHead') == 1
-    ? separator .. ' ' .. '%{FugitiveHead()}' 
+  var separator = "│"
+  var icon = '(ᵔ◡ᵔ)'
+
+  var fugitive = exists('*g:FugitiveHead') == 1
+    ? separator .. ' ' .. '%{FugitiveHead()}'
     : ''
-  var gutentags = active && exists('*gutentags#statusline') == 1
+  var gutentags = exists('*gutentags#statusline') == 1
     ? separator .. ' ' .. '%{gutentags#statusline()}'
     : ''
 
-  var statusline_hlgroup = active ? '%#StatusLine#' : '%#StatusLineNC#'
+  var statusline_hlgroup = '%#StatusLine#'
   var current_ft = empty(&filetype) ? '?' : '%{&filetype}'
+  var mode_info = GetModeInfo()
 
   var statusline_segments = [
-    active ? '%#Picoline' .. statusline_mode_map[mode()] .. '#' : '',
-    active ? statusline_mode_map[mode()] : 'ZZZ',
+    '%#Picoline' .. mode_info .. '#',
+    '' .. mode_info .. '',
     statusline_hlgroup,
     separator,
     fnamemodify(getcwd(), ':t'),
@@ -49,6 +66,21 @@ export def Build(active: bool): string
     fugitive,
     separator,
     current_ft,
+    separator,
+    icon,
+  ]
+  return join(statusline_segments)
+enddef
+
+export def BuildSleeping(): string
+  var separator = " "
+  var icon = '(∪｡∪)'
+
+  var statusline_segments = [
+    '%#StatusLineNC#',
+    separator,
+    '%{expand("%:t")}',
+    '%=',
     separator,
     icon,
   ]

@@ -9,7 +9,7 @@ def SetupPicolineColors(): void
   if default_bg == '' | default_bg = '#2e3440' | endif
   if default_fg == '' | default_fg = '#d8dee9' | endif
 
-  var mode_colors = {
+  var default_mode_colors = {
     'NRM': {'fg': default_fg, 'bg': default_bg},      # Normal mode
     'INS': {'fg': '#ffffff', 'bg': '#bf616a'},        # Insert mode
     'VIS': {'fg': '#2e3440', 'bg': '#ebcb8b'},        # Visual mode
@@ -19,9 +19,11 @@ def SetupPicolineColors(): void
     'TRM': {'fg': '#2e3440', 'bg': '#88c0d0'},        # Terminal mode
     'PRO': {'fg': '#2e3440', 'bg': '#a3be8c'},        # Prompt mode
     'EXT': {'fg': default_fg, 'bg': '#4c566a'},       # External mode
+    'PEN': {'fg': '#2e3440', 'bg': '#8fbcbb'},        # Operator-pending mode
+    'SCH': {'fg': '#2e3440', 'bg': '#81a1c1'},        # Search mode
   }
 
-  for [mode, colors] in items(mode_colors)
+  for [mode, colors] in items(default_mode_colors)
     var group_name = 'Picoline' .. mode
     if hlID(group_name) == 0 || synIDattr(hlID(group_name), 'bg', 'gui') == ''
       execute printf(
