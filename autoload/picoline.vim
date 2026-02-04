@@ -1,96 +1,97 @@
-vim9script
+if exists('g:autoloaded_picoline')
+  finish
+endif
+let g:autoloaded_picoline = 1
 
-def GetModeInfo(): string
-  var current_mode = mode()
-  var current_state = exists('*state') ? state() : ''
-  # Check mode patterns first
-  if current_mode =~# '[Ri]'
+function! s:get_mode_info() abort
+  let l:current_mode = mode()
+  let l:current_state = exists('*state') ? state() : ''
+
+  if l:current_mode =~# '[Ri]'
     return 'INS'
-  elseif current_mode ==# '!'
+  elseif l:current_mode ==# '!'
     return 'EXT'
-  elseif current_mode ==# 't'
+  elseif l:current_mode ==# 't'
     return 'TRM'
-  elseif current_mode =~# '[Rv]'
+  elseif l:current_mode =~# '[Rv]'
     return 'RPL'
-  elseif current_mode =~? '[v]'
+  elseif l:current_mode =~? '[v]'
     return 'VIS'
-  elseif current_mode ==? 'c'
-    # Distinguish between command-line (:) and search (/?)
-    var cmdtype = getcmdtype()
-    if cmdtype =~ '[/?]'
+  elseif l:current_mode ==? 'c'
+    let l:cmdtype = getcmdtype()
+    if l:cmdtype =~# '[/?]'
       return 'SCH'
     else
       return 'CMD'
     endif
-  elseif current_mode =~# '[r]'
+  elseif l:current_mode =~# '[r]'
     return 'PRO'
-  elseif current_mode =~? '[sS]'
+  elseif l:current_mode =~? '[sS]'
     return 'SEL'
-  # Check state for operator-pending (only after mode checks)
-  elseif current_state =~# '[mo]'
+  elseif l:current_state =~# '[mo]'
     return 'PEN'
   else
     return 'NRM'
   endif
-enddef
+endfunction
 
-export def Build(active: bool): string
-  if !active
-    return BuildSleeping()
+function! picoline#build(active) abort
+  if !a:active
+    return picoline#build_sleeping()
   endif
 
-  var separator = "│"
-  var icon = '(ᵔ◡ᵔ)'
+  let l:separator = '│'
+  let l:icon = '(ᵔ◡ᵔ)'
 
-  var fugitive = exists('*g:FugitiveHead') == 1
-    ? separator .. ' ' .. '%{FugitiveHead()}'
-    : ''
-  var gutentags = exists('*gutentags#statusline') == 1
-    ? separator .. ' ' .. '%{gutentags#statusline()}'
-    : ''
+  let l:fugitive = exists('*g:FugitiveHead') == 1
+        \ ? l:separator . ' ' . '%{FugitiveHead()}'
+        \ : ''
+  let l:gutentags = exists('*gutentags#statusline') == 1
+        \ ? l:separator . ' ' . '%{gutentags#statusline()}'
+        \ : ''
 
-  var statusline_hlgroup = '%#StatusLine#'
-  var current_ft = empty(&filetype) ? '?' : '%{&filetype}'
-  var mode_info = GetModeInfo()
+  let l:statusline_hlgroup = '%#StatusLine#'
+  let l:current_ft = empty(&filetype) ? '?' : '%{&filetype}'
+  let l:mode_info = s:get_mode_info()
 
-  var statusline_segments = [
-    '%#Picoline' .. mode_info .. '#',
-    '' .. mode_info .. '',
-    statusline_hlgroup,
-    separator,
-    fnamemodify(getcwd(), ':t'),
-    separator,
-    '%{expand("%:.")} %m %r %h',
-    '%=',
-    gutentags,
-    fugitive,
-    separator,
-    current_ft,
-    separator,
-    icon,
-  ]
-  return join(statusline_segments)
-enddef
+  let l:statusline_segments = [
+        \ '%#Picoline' . l:mode_info . '#',
+        \ '' . l:mode_info . '',
+        \ l:statusline_hlgroup,
+        \ l:separator,
+        \ fnamemodify(getcwd(), ':t'),
+        \ l:separator,
+        \ '%{expand("%:.")} %m %r %h',
+        \ '%=',
+        \ l:gutentags,
+        \ l:fugitive,
+        \ l:separator,
+        \ l:current_ft,
+        \ l:separator,
+        \ l:icon,
+        \ ]
+  return join(l:statusline_segments)
+endfunction
 
-export def BuildSleeping(): string
-  var separator = " "
-  var icon = '(∪｡∪)'
+function! picoline#build_sleeping() abort
+  let l:separator = ' '
+  let l:icon = '(∪｡∪)'
 
-  var statusline_segments = [
-    '%#StatusLineNC#',
-    separator,
-    '%{expand("%:t")}',
-    '%=',
-    separator,
-    icon,
-  ]
-  return join(statusline_segments)
-enddef
+  let l:statusline_segments = [
+        \ '%#StatusLineNC#',
+        \ l:separator,
+        \ '%{expand("%:t")}',
+        \ '%=',
+        \ l:separator,
+        \ l:icon,
+        \ ]
+  return join(l:statusline_segments)
+endfunction
 
-export def Toggle(): void
+function! picoline#toggle() abort
   if &laststatus == 2
     set laststatus=0
   else
     set laststatus=2
   endif
-enddef
+endfunction

@@ -3,8 +3,7 @@
 ![active window](./doc/active.png)
 ![inactive window](./doc/inactive.png)
 
-picoline is a tiny status line written in vim9script for my personal use, and
-serves as a starting point that's easy to extend.
+picoline is a tiny status line written for my personal use, and serves as a minimal starting point that's easy to extend.
 
 picoline is very small. It has only one command - `PicolineToggle` - which just shows and hides the `statusline` (`:h statusline`).
 
@@ -38,7 +37,7 @@ You can override these highlight groups in your colorscheme or vimrc to customiz
 
 ```vim
 " Example: Custom colors for insert and visual modes
-highlight PicolineINS guifg=#ffffff guibg=#e74c3c ctermbg=red ctermfg=white
+highlight PicolineINS guifg=#ffffff guibg=#e74c3c ctermbg=red    ctermfg=white
 highlight PicolineVIS guifg=#2c3e50 guibg=#f1c40f ctermbg=yellow ctermfg=black
 ```
 
