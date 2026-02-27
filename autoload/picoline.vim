@@ -44,10 +44,10 @@ function! picoline#build(active) abort
   let l:icon = '(ᵔ◡ᵔ)'
 
   let l:fugitive = exists('*g:FugitiveHead') == 1
-        \ ? l:separator . ' ' . '%{FugitiveHead()}'
+        \ ? '%{empty(FugitiveHead()) ? "" : "' . l:separator . ' " . FugitiveHead()}'
         \ : ''
   let l:gutentags = exists('*gutentags#statusline') == 1
-        \ ? l:separator . ' ' . '%{gutentags#statusline()}'
+        \ ? '%{empty(gutentags#statusline()) ? "" : "' . l:separator . ' " . gutentags#statusline()}'
         \ : ''
 
   let l:statusline_hlgroup = '%#StatusLine#'
