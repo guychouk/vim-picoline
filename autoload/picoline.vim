@@ -40,37 +40,37 @@ function! picoline#build(active) abort
     return picoline#build_sleeping()
   endif
 
-  let l:separator = '│'
   let l:icon = '(ᵔ◡ᵔ)'
-
-  let l:fugitive = exists('*g:FugitiveHead') == 1
-        \ ? '%{empty(FugitiveHead()) ? "" : "' . l:separator . ' " . FugitiveHead()}'
-        \ : ''
-  let l:gutentags = exists('*gutentags#statusline') == 1
-        \ ? '%{empty(gutentags#statusline()) ? "" : "' . l:separator . ' " . gutentags#statusline()}'
-        \ : ''
-
   let l:statusline_hlgroup = '%#StatusLine#'
-  let l:current_ft = empty(&filetype) ? '?' : '%{&filetype}'
+  let l:sep_char = '│'
+  let l:sep_colored = ' %#PicolineSeparator#' . l:sep_char . l:statusline_hlgroup . ' '
   let l:mode_info = s:get_mode_info()
 
-  let l:statusline_segments = [
-        \ '%#Picoline' . l:mode_info . '#',
-        \ '' . l:mode_info . '',
-        \ l:statusline_hlgroup,
-        \ l:separator,
-        \ fnamemodify(getcwd(), ':t'),
-        \ l:separator,
-        \ '%{expand("%:.")} %m %r %h',
-        \ '%=',
-        \ l:gutentags,
-        \ l:fugitive,
-        \ l:separator,
-        \ l:current_ft,
-        \ l:separator,
-        \ l:icon,
-        \ ]
-  return join(l:statusline_segments)
+  let l:left = ' %#Picoline' . l:mode_info . '#' . l:mode_info . l:statusline_hlgroup
+  let l:left .= l:sep_colored . fnamemodify(getcwd(), ':t')
+  let l:left .= l:sep_colored . '%{expand("%:.")} %m %r %h'
+
+  let l:right = ''
+
+  if exists('*gutentags#statusline') == 1
+    let l:gt = gutentags#statusline()
+    if !empty(l:gt)
+      let l:right .= l:sep_colored . l:gt
+    endif
+  endif
+
+  if exists('*g:FugitiveHead') == 1
+    let l:branch = FugitiveHead()
+    if !empty(l:branch)
+      let l:right .= l:sep_colored . l:branch
+    endif
+  endif
+
+  let l:current_ft = empty(&filetype) ? '?' : &filetype
+  let l:right .= l:sep_colored . l:current_ft
+  let l:right .= l:sep_colored . l:icon
+
+  return l:left . '%=' . l:right
 endfunction
 
 function! picoline#build_sleeping() abort

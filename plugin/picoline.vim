@@ -39,6 +39,14 @@ function! s:setup_picoline_colors() abort
             \ )
     endif
   endfor
+
+  if hlID('PicolineSeparator') == 0 || synIDattr(hlID('PicolineSeparator'), 'fg', 'gui') ==# ''
+    execute printf(
+          \ 'highlight PicolineSeparator guifg=%s guibg=%s ctermfg=gray ctermbg=black',
+          \ '#6b6b6b',
+          \ l:default_bg
+          \ )
+  endif
 endfunction
 
 augroup picoline
