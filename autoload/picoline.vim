@@ -40,7 +40,7 @@ function! picoline#build(active) abort
     return picoline#build_sleeping()
   endif
 
-  let l:icon = '(ᵔ◡ᵔ)'
+  let l:icon = '（ᵔ◡ᵔ）'
   let l:statusline_hlgroup = '%#StatusLine#'
   let l:sep_char = '│'
   let l:sep_colored = ' %#PicolineSeparator#' . l:sep_char . l:statusline_hlgroup . ' '
@@ -75,7 +75,7 @@ endfunction
 
 function! picoline#build_sleeping() abort
   let l:separator = ' '
-  let l:icon = '(∪｡∪)'
+  let l:icon = '（ᴗ˳ᴗ）'
 
   let l:statusline_segments = [
         \ '%#StatusLineNC#',
